@@ -1,0 +1,4 @@
+github.com/dalefarnsworth/go-xmodem v0.0.0-20200615194141-c18b46e2d887 h1:KNe6N+1AEHc1AmXklkDMXdJrD9uJ93ElLHlUUHUvRxQ=
+github.com/dalefarnsworth/go-xmodem v0.0.0-20200615194141-c18b46e2d887/go.mod h1:G0sexvS0JaMD1jju3SlLvLwfKe1SGvmfvu5YfTD7mtI=
+github.com/pkg/term v0.0.0-20200520122047-c3ffed290a03 h1:pd4YKIqCB0U7O2I4gWHgEUA2mCEOENmco0l/bM957bU=
+github.com/pkg/term v0.0.0-20200520122047-c3ffed290a03/go.mod h1:Z9+Ul5bCbBKnbCvdOWbLqTHhJiYV414CURZJba6L8qA=
