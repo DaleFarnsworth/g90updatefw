@@ -52,8 +52,6 @@ const (
 	menuSelector     = "1"
 
 	buflen = 16 * 1024
-
-	poll byte = 0x43
 )
 
 var progname string
