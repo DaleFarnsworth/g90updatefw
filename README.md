@@ -23,8 +23,12 @@ Here is the output of `g90updatefw --help`:
     without any user interaction.
 
 A Linux/amd64 executable may be downloaded from
-[https://www.farnsworth.org/dale/g90updatefw/downloads/linux](
-https://www.farnsworth.org/dale/g90updatefw/downloads/linux).
+[https://www.farnsworth.org/dale/g90updatefw/downloads/linux/amd64](
+https://www.farnsworth.org/dale/g90updatefw/downloads/linux/amd64).
+
+Executables for other Linux (and MacOS) variants can be found at
+[https://www.farnsworth.org/dale/g90updatefw/downloads](
+https://www.farnsworth.org/dale/g90updatefw/downloads).
 
 I'll entertain requests to make executables for other OS/Architecture
 combinations available.  Unfortunately, the serial library I'm using
