@@ -151,8 +151,8 @@ func usage(strs ...string) {
 		fmt.Fprintln(os.Stderr)
 	}
 	fmt.Fprintf(os.Stderr, "Usage: %s <firmware_file> <serial_device>\n", progname)
-	fmt.Fprintf(os.Stderr, "or     %s --help\n", progname)
-	fmt.Fprintf(os.Stderr, "or     %s --version\n", progname)
+	fmt.Fprintf(os.Stderr, "  or   %s --help\n", progname)
+	fmt.Fprintf(os.Stderr, "  or   %s --version\n", progname)
 	os.Exit(1)
 }
 
