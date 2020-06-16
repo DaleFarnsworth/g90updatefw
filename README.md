@@ -9,8 +9,8 @@ Here is the output of `g90updatefw --help`:
     radio.  It can be used to update either the main unit or the display unit.
     
         Usage: g90updatefw <firmware_file> <serial_device>
-        or     g90updatefw --help
-        or     g90updatefw --version
+          or   g90updatefw --help
+          or   g90updatefw --version
     
     where <firmware_file> is the name of a firmware file for either the
     main unit or for the display unit and <serial_device> is the name of
