@@ -160,8 +160,8 @@ This program is designed to write a firmware file to the Xiegu G90
 radio.  It can be used to update either the main unit or the display unit.
 
     Usage: %s <firmware_file> <serial_device>
-    or     %s --help
-    or     %s --version
+      or   %s --help
+      or   %s --version
 
 where <firmware_file> is the name of a firmware file for either the
 main unit or for the display unit and <serial_device> is the name of
