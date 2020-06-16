@@ -39,10 +39,12 @@ import (
 
 const (
 	versionMajor = 1
-	versionMinor = 0
+	versionMinor = 1
 
-	waitTimeout   = 20 * time.Millisecond
-	uploadTimeout = 10 * time.Second
+	attentionTimeout = 50 * time.Millisecond
+	menuTimeout      = 1 * time.Second
+	eraseTimeout     = 1 * time.Second
+	uploadTimeout    = 10 * time.Second
 
 	banner = "Hit a key to abort"
 	menu   = "1.Update FW"
@@ -60,6 +62,7 @@ func readString(term *term.Term) string {
 	buf := make([]byte, buflen)
 
 	i := 0
+	lastReadZeroBytes := false
 	for {
 		n, err := term.Read(buf[i:])
 		if err != nil && err != io.EOF {
@@ -69,8 +72,14 @@ func readString(term *term.Term) string {
 			if i == 0 {
 				continue
 			}
-			break
+			if lastReadZeroBytes {
+				// only return
+				break
+			}
+			lastReadZeroBytes = true
+			continue
 		}
+		lastReadZeroBytes = false
 		syscall.Write(syscall.Stdout, buf[i:i+n])
 		i += n
 	}
@@ -101,15 +110,15 @@ func expectSend(term *term.Term, expect, send string) {
 func updateG90(term *term.Term, data []byte) {
 	term.Flush()
 
-	term.SetReadTimeout(waitTimeout)
+	term.SetReadTimeout(attentionTimeout)
 	expectSend(term, banner, attentionGrabber)
 	fmt.Println()
 
-	term.SetReadTimeout(waitTimeout)
+	term.SetReadTimeout(menuTimeout)
 	expectSend(term, menu, menuSelector)
 	fmt.Println()
 
-	term.SetReadTimeout(waitTimeout)
+	term.SetReadTimeout(eraseTimeout)
 	expectSend(term, waitFW, "")
 	fmt.Printf("\n\n> Uploading %d bytes.\n", len(data))
 
