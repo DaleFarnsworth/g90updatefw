@@ -39,13 +39,13 @@ import (
 
 const (
 	versionMajor = 1
-	versionMinor = 1
+	versionMinor = 2
 
-	attentionTimeout = 50 * time.Millisecond
-	menuTimeout      = 1 * time.Second
-	eraseTimeout     = 1 * time.Second
+	attentionTimeout = 10 * time.Millisecond
+	menuTimeout      = 50 * time.Millisecond
+	eraseTimeout     = 50 * time.Millisecond
 	uploadTimeout    = 10 * time.Second
-	cleanupTimeout   = 1 * time.Second
+	cleanupTimeout   = 500 * time.Millisecond
 
 	banner = "Hit a key to abort"
 	menu   = "1.Update FW"
@@ -54,7 +54,7 @@ const (
 	attentionGrabber = " "
 	menuSelector     = "1"
 
-	buflen = 16 * 1024
+	buflen = 64 * 1024
 )
 
 var progname string
@@ -95,9 +95,13 @@ func readString(term *term.Term) string {
 func expectSend(term *term.Term, expect, send string) {
 	fmt.Printf("> Waiting for '%s'...\n\n", expect)
 
-	str := readString(term)
-	if !strings.Contains(str, expect) {
-		log.Fatalf("'%s' not found.", expect)
+	previousStr := ""
+	for {
+		str := readString(term)
+		if strings.Contains(previousStr+str, expect) {
+			break
+		}
+		previousStr = str
 	}
 
 	if len(send) != 0 {
