@@ -45,6 +45,7 @@ const (
 	menuTimeout      = 1 * time.Second
 	eraseTimeout     = 1 * time.Second
 	uploadTimeout    = 10 * time.Second
+	cleanupTimeout   = 1 * time.Second
 
 	banner = "Hit a key to abort"
 	menu   = "1.Update FW"
@@ -146,6 +147,9 @@ func updateG90(term *term.Term, data []byte) {
 	}
 
 	fmt.Println("\n> Upload complete.")
+
+	term.SetReadTimeout(cleanupTimeout)
+	readString(term)
 
 	term.Flush()
 }
