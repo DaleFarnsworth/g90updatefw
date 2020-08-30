@@ -34,7 +34,6 @@ import (
 	"time"
 
 	"github.com/dalefarnsworth/go-xmodem/xmodem"
-	"github.com/pkg/term"
 )
 
 const (
@@ -59,13 +58,13 @@ const (
 
 var progname string
 
-func readString(term *term.Term) string {
+func readString(serial *Serial) string {
 	buf := make([]byte, buflen)
 
 	i := 0
 	lastReadZeroBytes := false
 	for {
-		n, err := term.Read(buf[i:])
+		n, err := serial.Read(buf[i:])
 		if err != nil && err != io.EOF {
 			log.Fatal(err)
 		}
@@ -92,12 +91,12 @@ func readString(term *term.Term) string {
 	return string(buf[0:i])
 }
 
-func expectSend(term *term.Term, expect, send string) {
+func expectSend(serial *Serial, expect, send string) {
 	fmt.Printf("> Waiting for '%s'...\n\n", expect)
 
 	previousStr := ""
 	for {
-		str := readString(term)
+		str := readString(serial)
 		if strings.Contains(previousStr+str, expect) {
 			break
 		}
@@ -105,29 +104,29 @@ func expectSend(term *term.Term, expect, send string) {
 	}
 
 	if len(send) != 0 {
-		_, err := term.Write([]byte(send))
+		_, err := serial.Write([]byte(send))
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 }
 
-func updateG90(term *term.Term, data []byte) {
-	term.Flush()
+func updateG90(serial *Serial, data []byte) {
+	serial.Flush()
 
-	term.SetReadTimeout(attentionTimeout)
-	expectSend(term, banner, attentionGrabber)
+	serial.SetReadTimeout(attentionTimeout)
+	expectSend(serial, banner, attentionGrabber)
 	fmt.Println()
 
-	term.SetReadTimeout(menuTimeout)
-	expectSend(term, menu, menuSelector)
+	serial.SetReadTimeout(menuTimeout)
+	expectSend(serial, menu, menuSelector)
 	fmt.Println()
 
-	term.SetReadTimeout(eraseTimeout)
-	expectSend(term, waitFW, "")
+	serial.SetReadTimeout(eraseTimeout)
+	expectSend(serial, waitFW, "")
 	fmt.Printf("\n\n> Uploading %d bytes.\n", len(data))
 
-	term.SetReadTimeout(uploadTimeout)
+	serial.SetReadTimeout(uploadTimeout)
 	counter := 0
 	previousBlock := -1
 	callback := func(block int) {
@@ -145,17 +144,17 @@ func updateG90(term *term.Term, data []byte) {
 		counter++
 		previousBlock = block
 	}
-	err := xmodem.ModemSend1K(term, data, callback)
+	err := xmodem.ModemSend1K(serial, data, callback)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	fmt.Println("\n> Upload complete.")
 
-	term.SetReadTimeout(cleanupTimeout)
-	readString(term)
+	serial.SetReadTimeout(cleanupTimeout)
+	readString(serial)
 
-	term.Flush()
+	serial.Flush()
 }
 
 func usage(strs ...string) {
@@ -230,11 +229,11 @@ func main() {
 	fwFilename := os.Args[1]
 	devName := os.Args[2]
 
-	term, err := term.Open(devName, term.Speed(115200), term.RawMode)
+	serial, err := SerialOpen(devName, 115200)
 	if err != nil {
 		usage(err.Error())
 	}
-	defer term.Close()
+	defer serial.Close()
 
 	data, err := ioutil.ReadFile(fwFilename)
 	if err != nil {
@@ -243,5 +242,5 @@ func main() {
 
 	instructions()
 
-	updateG90(term, data)
+	updateG90(serial, data)
 }
