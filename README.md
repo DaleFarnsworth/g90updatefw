@@ -25,7 +25,8 @@ Here is the output of `g90updatefw --help`:
 
 A Windows/386 executable (suitable for 32-bit and 64-bit Windows) may be downloaded
 from [https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386](
-https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386).
+https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386).  Remember to
+run it from a cmd.exe window!  You can't just double-click on it.
 
 A Linux/amd64 executable may be downloaded from
 [https://www.farnsworth.org/dale/g90updatefw/downloads/linux/amd64](
