@@ -1,7 +1,7 @@
 ## Xiegu G90 Firmware Updater
 
-The command-line program `g90updatefw` runs on Linux and uploads
-firmware updates to the Xiegu G90 Radio.
+The command-line program `g90updatefw` uploads
+firmware updates to the Xiegu G90 radio.
 
 Here is the output of `g90updatefw --help`:
 
@@ -14,25 +14,37 @@ Here is the output of `g90updatefw --help`:
     
     where <firmware_file> is the name of a firmware file for either the
     main unit or for the display unit and <serial_device> is the name of
-    the serial port connected to the Xiegu G90.  The <serial_device> is
-    typically /dev/ttyUSB0.
+    the USB serial port connected to the Xiegu G90.  On Linux, the <serial_device> is
+    typically /dev/ttyUSB0.  On Windows, com4 works for me as the serial device,
+    but your system may be different
     
     You should start the program with the programming cable plugged in
     and the power disconnected from the radio.  After starting the program,
     reconnect the power cable and power-on the radio.  The program runs
     without any user interaction.
 
+A Windows/386 executable (suitable for 32-bit and 64-bit Windows may be downloaded
+from [https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386](
+https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386).
+
 A Linux/amd64 executable may be downloaded from
 [https://www.farnsworth.org/dale/g90updatefw/downloads/linux/amd64](
 https://www.farnsworth.org/dale/g90updatefw/downloads/linux/amd64).
 
-Executables for other Linux (and MacOS) variants can be found at
+A MacOS/amd64 executable may be downloaded from
+[https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/amd64](
+https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/amd64).
+
+Executables for other OS and Architecture variants can be found starting at 
 [https://www.farnsworth.org/dale/g90updatefw/downloads](
 https://www.farnsworth.org/dale/g90updatefw/downloads).
 
 I'll entertain requests to make executables for other OS/Architecture
-combinations available.  Unfortunately, the serial library I'm using
-has no windows support, so it's very unlikely that I'll produce a
-windows version.
+combinations available.
 
 Dale Farnsworth dale@farnsworth.org
+
+P.S.  KB0OTY made a video about using g90updatefw on the Raspberry Pi.
+[https://www.youtube.com/watch?v=tnU0LtWxqOs](
+https://www.youtube.com/watch?v=tnU0LtWxqOs).
+Thanks Andrew!
