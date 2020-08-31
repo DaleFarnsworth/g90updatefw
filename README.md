@@ -23,7 +23,7 @@ Here is the output of `g90updatefw --help`:
     reconnect the power cable and power-on the radio.  The program runs
     without any user interaction.
 
-A Windows/386 executable (suitable for 32-bit and 64-bit Windows may be downloaded
+A Windows/386 executable (suitable for 32-bit and 64-bit Windows) may be downloaded
 from [https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386](
 https://www.farnsworth.org/dale/g90updatefw/downloads/windows/386).
 
