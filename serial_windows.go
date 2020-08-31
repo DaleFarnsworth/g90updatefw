@@ -51,16 +51,14 @@ func (serial *Serial) Close() error {
 func (serial *Serial) Read(buf []byte) (int, error) {
 	iterations := int((serial.timeout + minTimeout - 1*time.Millisecond) / minTimeout)
 
-	index := 0
 	for i := 0; i < iterations; i++ {
-		c, err := serial.port.Read(buf[index:])
-		index += c
-		if err != nil {
-			return index, err
+		count, err := serial.port.Read(buf)
+		if count != 0 || err != nil {
+			return count, err
 		}
 	}
 
-	return index, nil
+	return 0, nil
 }
 
 func (serial *Serial) SetReadTimeout(timeout time.Duration) error {
