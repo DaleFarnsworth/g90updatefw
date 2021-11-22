@@ -2,7 +2,7 @@ FLAGS = -ldflags "-s -w"
 
 default: linux/amd64/g90updatefw
 
-all: darwin/amd64/g90updatefw linux/386/g90updatefw linux/amd64/g90updatefw linux/arm/g90updatefw linux/arm64/g90updatefw linux/ppc64/g90updatefw linux/ppc64le/g90updatefw linux/riscv64/g90updatefw linux/s390x/g90updatefw windows/386/g90updatefw.exe windows/amd64/g90updatefw.exe
+all: darwin/amd64/g90updatefw darwin/arm64/g90updatefw linux/386/g90updatefw linux/amd64/g90updatefw linux/arm/g90updatefw linux/arm64/g90updatefw linux/ppc64/g90updatefw linux/ppc64le/g90updatefw linux/riscv64/g90updatefw linux/s390x/g90updatefw windows/386/g90updatefw.exe windows/amd64/g90updatefw.exe
 
 darwin/amd64/g90updatefw: main.go
 	GOOS=darwin GOARCH=amd64 go build $(FLAGS) -o darwin/amd64/g90updatefw

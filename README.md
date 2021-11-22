@@ -36,6 +36,10 @@ A MacOS/amd64 executable may be downloaded from
 [https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/amd64](
 https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/amd64).
 
+A MacOS/arm64 executable may be downloaded from
+[https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/arm64](
+https://www.farnsworth.org/dale/g90updatefw/downloads/darwin/arm64).
+
 Executables for other OS and Architecture variants can be found starting at 
 [https://www.farnsworth.org/dale/g90updatefw/downloads](
 https://www.farnsworth.org/dale/g90updatefw/downloads).
