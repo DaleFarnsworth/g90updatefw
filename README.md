@@ -47,6 +47,9 @@ https://www.farnsworth.org/dale/g90updatefw/downloads).
 I'll entertain requests to make executables for other OS/Architecture
 combinations available.
 
+NOTE: You will likely have to set execute permissions on the binary file after
+downloading.  On Linux this may be done by "chmod 755 <filename>".
+
 Dale Farnsworth dale@farnsworth.org
 
 P.S.  KB0OTY made a video about using g90updatefw on the Raspberry Pi.
