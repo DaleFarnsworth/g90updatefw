@@ -225,6 +225,7 @@ func usage(strs ...string) {
 }
 
 func help() {
+	version(os.Stdout)
 	help := `
 This program is designed to write a firmware file to a Xiegu radio.
 It can be used to update either the main unit or the display unit.

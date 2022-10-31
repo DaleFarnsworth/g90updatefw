@@ -8,39 +8,53 @@ the G90 or the G106 radios.
 
 Here is the output of `g90updatefw --help`:
 
-This program is designed to write a firmware file to a Xiegu radio.
-It can be used to update either the main unit or the display unit.
+    g90updatefw version 1.4
 
-    Usage: g90updatefw [options] <firmware_file> <serial_device>
-      or   g90updatefw -h or g90updatefw --help
-      or   g90updatefw -v or g90updatefw --version
+    This program is designed to write a firmware file to a Xiegu radio.
+    It can be used to update either the main unit or the display unit.
 
-where <firmware_file> is the name of a firmware file for either the
-main unit or for the display unit and <serial_device> is the name of
-the serial port connected to the Xiegu radio.  On non-windows machines
-the <serial_device> is typically /dev/ttyUSB0.
+	Usage: g90updatefw [options] <firmware_file> <serial_device>
+	  or   g90updatefw -h or g90updatefw --help
+	  or   g90updatefw -v or g90updatefw --version
 
-Specifying -h or --help produces this help message.
-Specifying -v or --version prints the program version.
+    where <firmware_file> is the name of a firmware file for either the
+    main unit or for the display unit and <serial_device> is the name of
+    the serial port connected to the Xiegu radio.  On non-windows machines
+    the <serial_device> is typically /dev/ttyUSB0.
 
-Options:
-    -g90, --g90, -G90, --G90
-        Specifies that the target radio is a Xiegu G90.
-        This is the default if the firmware filename or the program
-	name contains "g90" or "G90".
+    Specifying -h or --help produces this help message.
+    Specifying -v or --version prints the program version.
 
-    -g106, --g106, -G106, --G106
-        Specifies that the target radio is a Xiegu G106.
-	This is the default if the firmware filename or the program
-	name contains "g106" or "G106".
+    Options:
+	-g90, --g90, -G90, --G90
+	    Specifies that the target radio is an original Xiegu G90
+	    that requires typing a character to interrupt the
+	    bootloader to enable loading new firmware.
+	    This is the default if the firmware filename or the program
+	    name contains "g90" or "G90".
 
-To update a G90 radio, specify the --g90 option or ensure that the
-firmware filename or the program name contains the string "g90" or "G90".
-To update a G106 radio, specify the --g106 option or ensure that the
-firmware filename or the program name contains the string "g106" or "G106".
+	-g90v, --g90v, -G90V, --G90V
+	    Specifies that the target radio is a newer Xiegu G90V
+	    that requires holding in the volume control while
+	    powering on to enable loading new firmware.
 
-You should start the program with the programming cable plugged in
-and the power disconnected from the radio.
+	-g106, --g106, -G106, --G106
+	    Specifies that the target radio is a Xiegu G106.
+	    This is the default if the firmware filename or the program
+	    name contains "g106" or "G106".
+
+    To update a G90 radio, specify the --g90 option or ensure that the
+    firmware filename or the program name contains the string "g90" or "G90".
+
+    Newer G90 radios may require specifying the --g90v option. This is needed
+    if the G90 display or main unit requires holding in the volume control while
+    powering on the unit to enable loading new firmware.
+
+    To update a G106 radio, specify the --g106 option or ensure that the
+    firmware filename or the program name contains the string "g106" or "G106".
+
+    You should start the program with the programming cable plugged in
+    and the power disconnected from the radio.
 
 Source code and additional information about `g90updatefw` may be found at
 [https://github.com/DaleFarnsworth/g90updatefw](
