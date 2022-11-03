@@ -38,7 +38,7 @@ import (
 
 const (
 	versionMajor = "1"
-	versionMinor = "4"
+	versionMinor = "5"
 
 	buflen = 64 * 1024
 )
@@ -78,17 +78,31 @@ func readString(serial *Serial) string {
 	return string(buf[0:i])
 }
 
-func expectSend(serial *Serial, expect, send string) {
-	fmt.Printf("> Waiting for '%s'...\n\n", expect)
-
+func expect(serial *Serial, expects []string) (expectIndex int) {
 	previousStr := ""
+
 	for {
 		str := readString(serial)
-		if strings.Contains(previousStr+str, expect) {
-			break
+		for i, expect := range expects {
+			if strings.Contains(previousStr+str, expect) {
+				return i
+			}
 		}
 		previousStr = str
 	}
+
+	panic("unreachable")
+}
+
+func expectSend(serial *Serial, expects []string, sends []string) (whichExpect string) {
+	if len(sends) != len(expects) {
+		panic("length of sends array does not equal length of expects array")
+	}
+
+	fmt.Printf("> Waiting for '%s'...\n\n", strings.Join(expects, "' or '"))
+
+	expectIndex := expect(serial, expects)
+	send := sends[expectIndex]
 
 	if len(send) != 0 {
 		_, err := serial.Write([]byte(send))
@@ -96,44 +110,23 @@ func expectSend(serial *Serial, expect, send string) {
 			log.Fatal(err)
 		}
 	}
+
+	return expects[expectIndex]
 }
 
-func instructions(model string) {
-	instructions := " "
-
-	switch model {
-	case "G90":
-		instructions = `
-> Updating firmware for the Xiegu G90 radio.
-
-> 1. Disconnect power cable from the radio.
-> 2. Reconnect power cable to the radio.
-> 3. Power-on the radio.
-`
-	case "G90V":
-		instructions = `
-> Updating firmware for the Xiegu G90V radio.
-
+func instructions() {
+	fmt.Print("> ")
+	version(os.Stdout)
+	instructions := `
 > 1. Disconnect power cable from the radio.
 > 2. Reconnect power cable to the radio.
 > 3. Press the volume button and while holding it in,
-> 4. Press and hold the power button until the green light turns on.
+> 4. Press the power button until the radio begins erasing the existing firmware.
 `
-	case "G106":
-		instructions = `
-> Updating firmware for the Xiegu G106 radio.
-
-> 1. Disconnect power cable from the radio.
-> 2. Reconnect power cable to the radio.
-> 3. Press the volume button and while holding it in,
-> 4. Press and hold the power button until the green light turns on.
-`
-	}
-
 	fmt.Println(instructions[1:])
 }
 
-func updateRadio(model string, serial *Serial, data []byte) {
+func updateRadio(serial *Serial, data []byte) {
 	attentionTimeout := 10 * time.Millisecond
 	menuTimeout := 50 * time.Millisecond
 	eraseTimeout := 50 * time.Millisecond
@@ -149,19 +142,21 @@ func updateRadio(model string, serial *Serial, data []byte) {
 
 	serial.Flush()
 
-	switch model {
-	case "G90":
-		serial.SetReadTimeout(attentionTimeout)
-		expectSend(serial, banner, attentionGrabber)
+	expects := []string{banner, menu}
+	sends := []string{attentionGrabber, menuSelector}
+
+	serial.SetReadTimeout(attentionTimeout)
+	found := expectSend(serial, expects, sends)
+	fmt.Println()
+
+	if found != menu {
+		serial.SetReadTimeout(menuTimeout)
+		expectSend(serial, []string{menu}, []string{menuSelector})
 		fmt.Println()
 	}
 
-	serial.SetReadTimeout(menuTimeout)
-	expectSend(serial, menu, menuSelector)
-	fmt.Println()
-
 	serial.SetReadTimeout(eraseTimeout)
-	expectSend(serial, waitFW, "")
+	expectSend(serial, []string{waitFW}, []string{""})
 	fmt.Printf("\n\n> Uploading %d bytes.\n", len(data))
 
 	serial.SetReadTimeout(uploadTimeout)
@@ -203,23 +198,9 @@ func usage(strs ...string) {
 		}
 		fmt.Fprintln(os.Stderr)
 	}
-	fmt.Fprintf(os.Stderr, "Usage: %s [options] <firmware_file> <serial_device>\n", progname)
+	fmt.Fprintf(os.Stderr, "Usage: %s <firmware_file> <serial_device>\n", progname)
 	fmt.Fprintf(os.Stderr, "    or %s --help\n", progname)
 	fmt.Fprintf(os.Stderr, "    or %s --version\n\n", progname)
-	fmt.Fprintf(os.Stderr, "    Options:\n")
-	fmt.Fprintf(os.Stderr, "        --g90\n")
-	fmt.Fprintf(os.Stderr, "            Specifies that the target radio is an original Xiegu G90\n")
-	fmt.Fprintf(os.Stderr, "            that requires typing a character to interrupt the\n")
-	fmt.Fprintf(os.Stderr, "            bootloader to enable loading new firmware.\n")
-	fmt.Fprintf(os.Stderr, "            This is the default if the program name contains \"g90\".\n")
-	fmt.Fprintf(os.Stderr, "        --g90v\n")
-	fmt.Fprintf(os.Stderr, "            Specifies that the target radio is a newer Xiegu G90V\n")
-	fmt.Fprintf(os.Stderr, "            that requires holding in the volume control while\n")
-	fmt.Fprintf(os.Stderr, "            powering on to enable loading new firmware.\n")
-	fmt.Fprintf(os.Stderr, "        --g106\n")
-	fmt.Fprintf(os.Stderr, "            Specifies that the target radio is a Xiegu G106\n")
-	fmt.Fprintf(os.Stderr, "            This is the default if the program name contains \"g106\".\n")
-	fmt.Fprintf(os.Stderr, "\n")
 	fmt.Fprintf(os.Stderr, "    Use the --help option for more detailed usage information.\n")
 	os.Exit(1)
 }
@@ -230,45 +211,18 @@ func help() {
 This program is designed to write a firmware file to a Xiegu radio.
 It can be used to update either the main unit or the display unit.
 
-    Usage: %s [options] <firmware_file> <serial_device>
+    Usage: %s <firmware_file> <serial_device>
       or   %s -h or %s --help
       or   %s -v or %s --version
 
 where <firmware_file> is the name of a firmware file for either the
 main unit or for the display unit and <serial_device> is the name of
 the serial port connected to the Xiegu radio.  On non-windows machines
-the <serial_device> is typically /dev/ttyUSB0.
+the <serial_device> is typically similar to /dev/ttyUSB2. On windows
+machines it will be similar to COMM2.
 
 Specifying -h or --help produces this help message.
 Specifying -v or --version prints the program version.
-
-Options:
-    -g90, --g90, -G90, --G90
-        Specifies that the target radio is an original Xiegu G90
-        that requires typing a character to interrupt the
-        bootloader to enable loading new firmware.
-        This is the default if the firmware filename or the program
-        name contains "g90" or "G90".
-
-    -g90v, --g90v, -G90V, --G90V
-        Specifies that the target radio is a newer Xiegu G90V
-        that requires holding in the volume control while
-        powering on to enable loading new firmware.
-
-    -g106, --g106, -G106, --G106
-        Specifies that the target radio is a Xiegu G106.
-        This is the default if the firmware filename or the program
-        name contains "g106" or "G106".
-
-To update a G90 radio, specify the --g90 option or ensure that the
-firmware filename or the program name contains the string "g90" or "G90".
-
-Newer G90 radios may require specifying the --g90v option. This is needed
-if the G90 display or main unit requires holding in the volume control while
-powering on the unit to enable loading new firmware.
-
-To update a G106 radio, specify the --g106 option or ensure that the
-firmware filename or the program name contains the string "g106" or "G106".
 
 You should start the program with the programming cable plugged in
 and the power disconnected from the radio.
@@ -281,20 +235,11 @@ func version(f *os.File) {
 	fmt.Fprintf(f, "%s version %s.%s\n", progname, versionMajor, versionMinor)
 }
 
-func setModel(model *string, newmodel string) {
-	if *model != "" && *model != newmodel {
-		usage("Only one of g90 or g106 may be specified")
-	}
-	*model = newmodel
-}
-
 func main() {
 	progname = filepath.Base(os.Args[0])
 	log.SetPrefix(progname + ": ")
 	log.SetFlags(log.Lshortfile)
 	args := os.Args[1:]
-
-	model := ""
 
 	for len(args) > 0 && args[0][0] == '-' {
 		switch args[0] {
@@ -305,15 +250,6 @@ func main() {
 		case "-v", "--version":
 			version(os.Stdout)
 			os.Exit(0)
-
-		case "-g90", "--g90", "-G90", "--G90":
-			setModel(&model, "G90")
-
-		case "-g90v", "--g90v", "-G90V", "--G90V":
-			setModel(&model, "G90V")
-
-		case "-g106", "--g106", "-G106", "--G106":
-			setModel(&model, "G106")
 
 		default:
 			usage("Bad option: " + args[0])
@@ -329,30 +265,6 @@ func main() {
 	fwFilename := args[0]
 	devName := args[1]
 
-	if model == "" {
-		lowerFWFilename := strings.ToLower(fwFilename)
-		if strings.Contains(lowerFWFilename, "g90") {
-			setModel(&model, "G90")
-		}
-		if strings.Contains(lowerFWFilename, "g106") {
-			setModel(&model, "G106")
-		}
-	}
-
-	if model == "" {
-		lowerProgname := strings.ToLower(progname)
-		if strings.Contains(lowerProgname, "g90") {
-			setModel(&model, "G90")
-		}
-		if strings.Contains(lowerProgname, "g106") {
-			setModel(&model, "G106")
-		}
-	}
-
-	if model == "" {
-		usage("Please select the radio model with --g90 or --g106")
-	}
-
 	serial, err := SerialOpen(devName, 115200)
 	if err != nil {
 		usage(err.Error())
@@ -364,8 +276,7 @@ func main() {
 		usage(err.Error())
 	}
 
-	version(os.Stdout)
-	instructions(model)
+	instructions()
 
-	updateRadio(model, serial, data)
+	updateRadio(serial, data)
 }
