@@ -38,7 +38,7 @@ import (
 
 const (
 	versionMajor = "1"
-	versionMinor = "7"
+	versionMinor = "8"
 
 	buflen = 64 * 1024
 )
