@@ -7,7 +7,6 @@ all: darwin/amd64/g90updatefw darwin/arm64/g90updatefw linux/386/g90updatefw lin
 
 darwin/amd64/g90updatefw: main.go
 	GOOS=darwin GOARCH=amd64 go build $(FLAGS) -o "$@"
-	upx --brute "$@"
 	ln -f "$@" "$(@D)"/$(g106name)
 
 darwin/arm64/g90updatefw: main.go
