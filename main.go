@@ -25,7 +25,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -271,7 +270,7 @@ func main() {
 	}
 	defer serial.Close()
 
-	data, err := ioutil.ReadFile(fwFilename)
+	data, err := os.ReadFile(fwFilename)
 	if err != nil {
 		usage(err.Error())
 	}

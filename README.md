@@ -9,7 +9,7 @@ g106updatefw and g90updatefw are two names for the same program.
 
 Here is the output of `g90updatefw --help`:
 
-    g90updatefw version 1.5
+    g90updatefw version 1.9
 
     This program is designed to write a firmware file to a Xiegu radio.
     It can be used to update either the main unit or the display unit.
@@ -31,6 +31,29 @@ Here is the output of `g90updatefw --help`:
     and the power disconnected from the radio.
 
 The output from g106updatefw --help is extremely similar.
+
+## Linux: serial port permissions
+
+On Linux the serial port device (e.g. `/dev/ttyUSB0`) is owned by the `dialout`
+group. If you see a "permission denied" error, add your user to that group:
+
+    sudo usermod -aG dialout $USER
+
+Then log out and back in (or run `newgrp dialout` in the current shell) for the
+change to take effect.
+
+If you prefer not to modify group membership, you can create a udev rule
+instead. Create the file `/etc/udev/rules.d/50-xiegu-g90.rules` containing:
+
+    SUBSYSTEM=="tty", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", MODE="0666"
+
+Then reload udev rules:
+
+    sudo udevadm control --reload-rules && sudo udevadm trigger
+
+The vendor/product IDs above are for the CP210x USB-to-serial adapter commonly
+used with the G90 programming cable. Run `lsusb` with the cable plugged in to
+confirm the IDs for your cable if they differ.
 
 Source code and additional information about `g90updatefw` and `g106updatefw` may be found at
 [https://github.com/DaleFarnsworth/g90updatefw](
