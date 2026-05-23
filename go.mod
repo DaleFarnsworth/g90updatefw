@@ -1,6 +1,6 @@
 module github.com/DaleFarnsworth/g90updatefw
 
-go 1.23.0
+go 1.24.3
 
 require (
 	github.com/dalefarnsworth/go-xmodem v0.0.0-20240213152721-0fdc15598a9c
